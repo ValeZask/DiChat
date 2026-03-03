@@ -1,5 +1,5 @@
 from sqlalchemy import Boolean, Column, Integer, String
-from app.models.base import Base
+from app.database import Base
 
 
 class Computer(Base):
