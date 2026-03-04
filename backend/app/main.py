@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from app.routers.me import router as me_router  # ← добавить
 
 app = FastAPI(title="DiChat02", version="1.0.0")
 
@@ -10,6 +11,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.include_router(me_router)  # ← добавить
 
 @app.get("/")
 async def root():
