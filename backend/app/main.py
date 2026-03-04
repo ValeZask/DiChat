@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.routers.me import router as me_router
 from app.routers.rooms import router as rooms_router
+from app.routers.messages import router as messages_router
 
 app = FastAPI(title="DiChat02", version="1.0.0")
 
@@ -15,6 +16,7 @@ app.add_middleware(
 
 app.include_router(me_router)
 app.include_router(rooms_router)
+app.include_router(messages_router)
 
 @app.get("/")
 async def root():
