@@ -76,3 +76,23 @@ export async function fetchClassmates(clientIp?: string): Promise<User[]> {
   if (!res.ok) throw new Error(`fetchClassmates failed: ${res.status}`);
   return res.json();
 }
+
+// GET /admin/rooms — все комнаты (только админ)
+export async function fetchAdminRooms(clientIp?: string): Promise<Room[]> {
+  const headers: Record<string, string> = {};
+  if (clientIp) headers['X-Forwarded-For'] = clientIp;
+
+  const res = await fetch(`${API_BASE}/admin/rooms`, { headers, cache: 'no-store' });
+  if (!res.ok) throw new Error(`fetchAdminRooms failed: ${res.status}`);
+  return res.json();
+}
+
+// GET /admin/computers — все компы (только админ)
+export async function fetchAdminComputers(clientIp?: string): Promise<User[]> {
+  const headers: Record<string, string> = {};
+  if (clientIp) headers['X-Forwarded-For'] = clientIp;
+
+  const res = await fetch(`${API_BASE}/admin/computers`, { headers, cache: 'no-store' });
+  if (!res.ok) throw new Error(`fetchAdminComputers failed: ${res.status}`);
+  return res.json();
+}
