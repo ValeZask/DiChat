@@ -1,11 +1,12 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { useMe } from '@/components/user-provider';
-import { type Room, type User, type Message, fetchMessages, WS_BASE } from '@/lib/api';
+import { type Room, type User, type Message, fetchMessages } from '@/lib/api';
 import { Badge } from '@/components/ui/badge';
 import { MessageList } from '@/components/message-list';
 import { useWebSocket } from '@/hooks/useWebSocket';
+import { MessageInput } from '@/components/message-input';
 
 interface ChatLayoutProps {
   rooms: Room[];
@@ -17,7 +18,7 @@ export function ChatLayout({ rooms, classmates }: ChatLayoutProps) {
   const [activeRoom, setActiveRoom] = useState<Room | null>(
     rooms.find(r => r.type === 'group') ?? null
   );
-  const [messages, setMessages]   = useState<Message[]>([]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [loadingMsgs, setLoadingMsgs] = useState(false);
 
   // Загрузка истории при смене комнаты
@@ -32,13 +33,14 @@ export function ChatLayout({ rooms, classmates }: ChatLayoutProps) {
       .finally(() => setLoadingMsgs(false));
   }, [activeRoom?.id]);
 
-
+  // WebSocket — реалтайм
   const { sendMessage } = useWebSocket({
     roomId: activeRoom?.id ?? null,
     onMessage: (msg) => {
       setMessages(prev => [...prev, msg]);
     },
   });
+
   // Найти личную комнату между двумя компами
   function findPrivateRoom(classmate: User): Room | null {
     if (!user) return null;
@@ -197,12 +199,11 @@ export function ChatLayout({ rooms, classmates }: ChatLayoutProps) {
               <MessageList messages={messages} currentUser={user} />
             ) : null}
 
-            {/* Поле ввода — заглушка FRONT-21 */}
-            <div className="glass-thin px-4 py-3 border-t border-white/[0.07] shrink-0">
-              <div className="glass drop rounded-xl px-4 py-2.5 text-sm text-muted-foreground">
-                Поле ввода появится в FRONT-21
-              </div>
-            </div>
+            {/* Поле ввода */}
+            <MessageInput
+              onSend={sendMessage}
+              disabled={!activeRoom}
+            />
           </>
         ) : (
           <div className="flex-1 flex items-center justify-center">
