@@ -7,16 +7,21 @@ import { Badge } from '@/components/ui/badge';
 import { MessageList } from '@/components/message-list';
 import { useWebSocket } from '@/hooks/useWebSocket';
 import { MessageInput } from '@/components/message-input';
+import Link from 'next/link';
 
 interface ChatLayoutProps {
   rooms: Room[];
   classmates: User[];
+  readOnly?: boolean;
+  initialRoomId?: number;
 }
 
-export function ChatLayout({ rooms, classmates }: ChatLayoutProps) {
+export function ChatLayout({ rooms, classmates, readOnly, initialRoomId }: ChatLayoutProps) {
   const { user } = useMe();
   const [activeRoom, setActiveRoom] = useState<Room | null>(
-    rooms.find(r => r.type === 'group') ?? null
+    (initialRoomId ? rooms.find(r => r.id === initialRoomId) : null)
+    ?? rooms.find(r => r.type === 'group')
+    ?? null
   );
   const [messages, setMessages] = useState<Message[]>([]);
   const [loadingMsgs, setLoadingMsgs] = useState(false);
@@ -75,8 +80,34 @@ export function ChatLayout({ rooms, classmates }: ChatLayoutProps) {
 
         <nav className="flex-1 overflow-y-auto py-2 px-2 space-y-0.5">
 
-          {/* ── АДМИН: все групповые чаты ── */}
-          {user?.is_admin && (
+          {/* ── readOnly (админ смотрит чат): все комнаты в сайдбаре ── */}
+          {readOnly && (
+            <>
+              <div className="px-3 pt-1 pb-1.5 text-[10px] font-semibold text-muted-foreground uppercase tracking-widest">
+                Все чаты
+              </div>
+              {groupRooms.map(room => (
+                <button
+                  key={room.id}
+                  onClick={() => setActiveRoom(room)}
+                  className={[
+                    'w-full text-left px-3 py-2.5 rounded-xl transition-all duration-150 text-sm font-medium',
+                    activeRoom?.id === room.id
+                      ? 'drop text-foreground'
+                      : 'text-muted-foreground hover:bg-white/[0.05] hover:text-foreground',
+                  ].join(' ')}
+                >
+                  <div className="flex items-center gap-2.5">
+                    <span className="text-base leading-none">👥</span>
+                    <span className="truncate">{room.name}</span>
+                  </div>
+                </button>
+              ))}
+            </>
+          )}
+
+          {/* ── АДМИН (обычный режим): все групповые чаты ── */}
+          {!readOnly && user?.is_admin && (
             <>
               <div className="px-3 pt-1 pb-1.5 text-[10px] font-semibold text-muted-foreground uppercase tracking-widest">
                 Чаты
@@ -102,7 +133,7 @@ export function ChatLayout({ rooms, classmates }: ChatLayoutProps) {
           )}
 
           {/* ── УЧЕНИК: групповой + классматы ── */}
-          {!user?.is_admin && (
+          {!readOnly && !user?.is_admin && (
             <>
               {groupRooms[0] && (
                 <>
@@ -167,11 +198,19 @@ export function ChatLayout({ rooms, classmates }: ChatLayoutProps) {
         </nav>
 
         {/* Футер */}
-        {user?.is_admin && (
-          <div className="px-4 py-3 border-t border-white/[0.07]">
+        <div className="px-4 py-3 border-t border-white/[0.07] flex items-center justify-between">
+          {user?.is_admin && (
             <div className="text-xs text-primary font-medium">⚙ admin</div>
-          </div>
-        )}
+          )}
+          {readOnly && (
+            <Link
+              href="/admin"
+              className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+            >
+              ← Панель
+            </Link>
+          )}
+        </div>
       </aside>
 
       {/* ── Правая панель ── */}
@@ -185,6 +224,7 @@ export function ChatLayout({ rooms, classmates }: ChatLayoutProps) {
               </div>
               <div className="text-xs text-muted-foreground mt-0.5">
                 {activeRoom.type === 'group' ? 'Групповой чат' : 'Личный чат'}
+                {readOnly && <span className="ml-2 text-primary/60">· только чтение</span>}
               </div>
             </div>
 
@@ -199,11 +239,13 @@ export function ChatLayout({ rooms, classmates }: ChatLayoutProps) {
               <MessageList messages={messages} currentUser={user} />
             ) : null}
 
-            {/* Поле ввода */}
-            <MessageInput
-              onSend={sendMessage}
-              disabled={!activeRoom}
-            />
+            {/* Поле ввода — скрыто в режиме readOnly */}
+            {!readOnly && (
+              <MessageInput
+                onSend={sendMessage}
+                disabled={!activeRoom}
+              />
+            )}
           </>
         ) : (
           <div className="flex-1 flex items-center justify-center">

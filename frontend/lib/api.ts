@@ -96,3 +96,9 @@ export async function fetchAdminComputers(clientIp?: string): Promise<User[]> {
   if (!res.ok) throw new Error(`fetchAdminComputers failed: ${res.status}`);
   return res.json();
 }
+
+// GET /admin/rooms — используем для поиска конкретной комнаты
+export async function fetchAdminRoom(roomId: number, clientIp?: string): Promise<Room | null> {
+  const rooms = await fetchAdminRooms(clientIp);
+  return rooms.find(r => r.id === roomId) ?? null;
+}
