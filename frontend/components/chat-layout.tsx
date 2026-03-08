@@ -1,9 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useMe } from '@/components/user-provider';
-import { type Room, type User } from '@/lib/api';
+import { type Room, type User, type Message, fetchMessages, WS_BASE } from '@/lib/api';
 import { Badge } from '@/components/ui/badge';
+import { MessageList } from '@/components/message-list';
 
 interface ChatLayoutProps {
   rooms: Room[];
@@ -15,6 +16,20 @@ export function ChatLayout({ rooms, classmates }: ChatLayoutProps) {
   const [activeRoom, setActiveRoom] = useState<Room | null>(
     rooms.find(r => r.type === 'group') ?? null
   );
+  const [messages, setMessages]   = useState<Message[]>([]);
+  const [loadingMsgs, setLoadingMsgs] = useState(false);
+
+  // Загрузка истории при смене комнаты
+  useEffect(() => {
+    if (!activeRoom) return;
+    setMessages([]);
+    setLoadingMsgs(true);
+
+    fetchMessages(activeRoom.id)
+      .then(setMessages)
+      .catch(() => setMessages([]))
+      .finally(() => setLoadingMsgs(false));
+  }, [activeRoom?.id]);
 
   // Найти личную комнату между двумя компами
   function findPrivateRoom(classmate: User): Room | null {
@@ -79,7 +94,6 @@ export function ChatLayout({ rooms, classmates }: ChatLayoutProps) {
           {/* ── УЧЕНИК: групповой + классматы ── */}
           {!user?.is_admin && (
             <>
-              {/* Групповой чат */}
               {groupRooms[0] && (
                 <>
                   <div className="px-3 pt-1 pb-1.5 text-[10px] font-semibold text-muted-foreground uppercase tracking-widest">
@@ -102,7 +116,6 @@ export function ChatLayout({ rooms, classmates }: ChatLayoutProps) {
                 </>
               )}
 
-              {/* Личные чаты — список классматов */}
               <div className="px-3 pt-3 pb-1.5 text-[10px] font-semibold text-muted-foreground uppercase tracking-widest">
                 Личные чаты
               </div>
@@ -155,6 +168,7 @@ export function ChatLayout({ rooms, classmates }: ChatLayoutProps) {
       <main className="flex-1 flex flex-col overflow-hidden">
         {activeRoom ? (
           <>
+            {/* Заголовок */}
             <div className="glass-thin iridescent glass-highlight relative px-6 py-4 border-b border-white/[0.07] shrink-0">
               <div className="text-sm font-semibold text-foreground">
                 {activeRoom.name}
@@ -164,12 +178,18 @@ export function ChatLayout({ rooms, classmates }: ChatLayoutProps) {
               </div>
             </div>
 
-            <div className="flex-1 overflow-y-auto px-6 py-4 flex items-center justify-center">
-              <div className="text-muted-foreground text-sm">
-                Выбрана комната: {activeRoom.name}
+            {/* Сообщения */}
+            {loadingMsgs ? (
+              <div className="flex-1 flex items-center justify-center">
+                <div className="text-muted-foreground text-sm animate-pulse">
+                  Загрузка...
+                </div>
               </div>
-            </div>
+            ) : user ? (
+              <MessageList messages={messages} currentUser={user} />
+            ) : null}
 
+            {/* Поле ввода — заглушка FRONT-21 */}
             <div className="glass-thin px-4 py-3 border-t border-white/[0.07] shrink-0">
               <div className="glass drop rounded-xl px-4 py-2.5 text-sm text-muted-foreground">
                 Поле ввода появится в FRONT-21
