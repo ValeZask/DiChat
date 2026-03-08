@@ -1,144 +1,360 @@
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600&family=Inter:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600&family=Inter:wght@300;400;500;600&display=swap');
 @import "tailwindcss";
 @import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* Glassmorphism dark theme */
-  --background: 220 25% 8%;
-  --foreground: 210 20% 92%;
+  /* ── Base palette ── */
+  --background: 230 30% 7%;
+  --foreground: 210 25% 94%;
 
-  --card: 220 20% 12%;
-  --card-foreground: 210 20% 92%;
+  --card: 225 22% 11%;
+  --card-foreground: 210 25% 94%;
 
-  --popover: 220 20% 10%;
-  --popover-foreground: 210 20% 92%;
+  --popover: 225 22% 9%;
+  --popover-foreground: 210 25% 94%;
 
-  /* Accent: deep violet-blue */
-  --primary: 235 80% 65%;
+  /* iOS accent: vibrant indigo-violet */
+  --primary: 240 85% 68%;
   --primary-foreground: 0 0% 100%;
 
-  --secondary: 220 20% 18%;
-  --secondary-foreground: 210 20% 80%;
+  --secondary: 225 20% 16%;
+  --secondary-foreground: 210 20% 78%;
 
-  --muted: 220 18% 16%;
-  --muted-foreground: 210 15% 55%;
+  --muted: 225 18% 14%;
+  --muted-foreground: 215 15% 52%;
 
-  --accent: 235 70% 60%;
+  --accent: 260 75% 65%;
   --accent-foreground: 0 0% 100%;
 
-  --destructive: 0 72% 55%;
+  --destructive: 5 80% 58%;
   --destructive-foreground: 0 0% 100%;
 
-  --border: 220 15% 20%;
-  --input: 220 18% 16%;
-  --ring: 235 80% 65%;
+  --border: 225 18% 18%;
+  --input: 225 20% 13%;
+  --ring: 240 85% 68%;
 
-  --radius: 0.75rem;
+  --radius: 1rem;
 
-  /* Glass effect variables */
-  --glass-bg: rgba(255, 255, 255, 0.05);
-  --glass-border: rgba(255, 255, 255, 0.1);
-  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-  --glass-blur: blur(16px);
+  /* ── Liquid Glass surfaces ── */
+  /* Thin material — navigation bars, toolbars */
+  --glass-thin-bg:        rgba(255, 255, 255, 0.06);
+  --glass-thin-border:    rgba(255, 255, 255, 0.14);
+  --glass-thin-blur:      blur(20px) saturate(1.8);
+  --glass-thin-shadow:    0 2px 20px rgba(0, 0, 0, 0.35);
 
-  /* Chat specific */
-  --bubble-own: rgba(99, 102, 241, 0.35);
-  --bubble-other: rgba(255, 255, 255, 0.07);
-  --sidebar-bg: rgba(15, 17, 26, 0.85);
-  --panel-bg: rgba(12, 14, 22, 0.9);
+  /* Regular material — cards, panels */
+  --glass-bg:             rgba(255, 255, 255, 0.055);
+  --glass-border:         rgba(255, 255, 255, 0.12);
+  --glass-blur:           blur(28px) saturate(1.6) brightness(1.05);
+  --glass-shadow:         0 8px 40px rgba(0, 0, 0, 0.45),
+                          0 1px 0 rgba(255, 255, 255, 0.08) inset;
+
+  /* Thick material — sidebars, heavy surfaces */
+  --glass-thick-bg:       rgba(18, 20, 32, 0.82);
+  --glass-thick-border:   rgba(255, 255, 255, 0.09);
+  --glass-thick-blur:     blur(40px) saturate(1.4);
+  --glass-thick-shadow:   0 16px 64px rgba(0, 0, 0, 0.6);
+
+  /* ── Liquid drop — the "water bubble" effect ── */
+  --drop-bg:              rgba(255, 255, 255, 0.08);
+  --drop-border-top:      rgba(255, 255, 255, 0.55);
+  --drop-border-bottom:   rgba(255, 255, 255, 0.08);
+  --drop-shadow:          0 4px 24px rgba(0, 0, 0, 0.5),
+                          0 1px 0 rgba(255, 255, 255, 0.45) inset,
+                          0 -1px 0 rgba(0, 0, 0, 0.3) inset;
+
+  /* ── Iridescent shimmer ── */
+  --shimmer-a: rgba(120, 119, 255, 0.15);
+  --shimmer-b: rgba(196, 100, 255, 0.1);
+  --shimmer-c: rgba(56, 189, 248, 0.1);
+
+  /* ── Chat bubbles ── */
+  --bubble-own:           rgba(99, 102, 241, 0.32);
+  --bubble-own-border:    rgba(148, 150, 255, 0.4);
+  --bubble-own-shadow:    0 2px 16px rgba(99, 102, 241, 0.25),
+                          0 1px 0 rgba(255, 255, 255, 0.2) inset;
+
+  --bubble-other:         rgba(255, 255, 255, 0.065);
+  --bubble-other-border:  rgba(255, 255, 255, 0.1);
+  --bubble-other-shadow:  0 2px 12px rgba(0, 0, 0, 0.3),
+                          0 1px 0 rgba(255, 255, 255, 0.12) inset;
+
+  /* ── Layout ── */
+  --sidebar-bg:           rgba(12, 14, 24, 0.88);
+  --panel-bg:             rgba(10, 12, 20, 0.92);
 }
 
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   Theme token bridge
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 @theme inline {
-  --color-background: hsl(var(--background));
-  --color-foreground: hsl(var(--foreground));
-  --color-card: hsl(var(--card));
-  --color-card-foreground: hsl(var(--card-foreground));
-  --color-popover: hsl(var(--popover));
-  --color-popover-foreground: hsl(var(--popover-foreground));
-  --color-primary: hsl(var(--primary));
-  --color-primary-foreground: hsl(var(--primary-foreground));
-  --color-secondary: hsl(var(--secondary));
+  --color-background:           hsl(var(--background));
+  --color-foreground:           hsl(var(--foreground));
+  --color-card:                 hsl(var(--card));
+  --color-card-foreground:      hsl(var(--card-foreground));
+  --color-popover:              hsl(var(--popover));
+  --color-popover-foreground:   hsl(var(--popover-foreground));
+  --color-primary:              hsl(var(--primary));
+  --color-primary-foreground:   hsl(var(--primary-foreground));
+  --color-secondary:            hsl(var(--secondary));
   --color-secondary-foreground: hsl(var(--secondary-foreground));
-  --color-muted: hsl(var(--muted));
-  --color-muted-foreground: hsl(var(--muted-foreground));
-  --color-accent: hsl(var(--accent));
-  --color-accent-foreground: hsl(var(--accent-foreground));
-  --color-destructive: hsl(var(--destructive));
+  --color-muted:                hsl(var(--muted));
+  --color-muted-foreground:     hsl(var(--muted-foreground));
+  --color-accent:               hsl(var(--accent));
+  --color-accent-foreground:    hsl(var(--accent-foreground));
+  --color-destructive:          hsl(var(--destructive));
   --color-destructive-foreground: hsl(var(--destructive-foreground));
-  --color-border: hsl(var(--border));
-  --color-input: hsl(var(--input));
-  --color-ring: hsl(var(--ring));
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
+  --color-border:               hsl(var(--border));
+  --color-input:                hsl(var(--input));
+  --color-ring:                 hsl(var(--ring));
+  --radius-sm:  calc(var(--radius) - 6px);
+  --radius-md:  calc(var(--radius) - 2px);
+  --radius-lg:  var(--radius);
+  --radius-xl:  calc(var(--radius) + 6px);
+  --radius-2xl: calc(var(--radius) + 12px);
+  --radius-pill: 9999px;
 }
 
-* {
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   Reset
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+*, *::before, *::after {
   box-sizing: border-box;
   border-color: hsl(var(--border));
 }
 
 html {
   color-scheme: dark;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   Body — deep space with aurora
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 body {
   background-color: hsl(var(--background));
   color: hsl(var(--foreground));
-  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-family: 'Inter', system-ui, sans-serif;
   min-height: 100vh;
-  /* Animated gradient background */
+  overflow: hidden;
+
+  /* Deep multi-layer aurora background */
   background-image:
-    radial-gradient(ellipse at 20% 50%, rgba(99, 102, 241, 0.12) 0%, transparent 60%),
-    radial-gradient(ellipse at 80% 20%, rgba(139, 92, 246, 0.1) 0%, transparent 50%),
-    radial-gradient(ellipse at 60% 80%, rgba(59, 130, 246, 0.08) 0%, transparent 50%);
+    /* Aurora streaks */
+    radial-gradient(ellipse 80% 50% at 15% 40%,  rgba(99,  102, 241, 0.18) 0%, transparent 65%),
+    radial-gradient(ellipse 60% 40% at 85% 15%,  rgba(168, 85,  247, 0.14) 0%, transparent 55%),
+    radial-gradient(ellipse 50% 60% at 65% 85%,  rgba(56,  189, 248, 0.10) 0%, transparent 55%),
+    radial-gradient(ellipse 40% 30% at 50% 50%,  rgba(139, 92,  246, 0.07) 0%, transparent 70%),
+    /* Deep base */
+    radial-gradient(ellipse 100% 80% at 50% 100%, rgba(15,  10,  40,  0.8)  0%, transparent 70%);
   background-attachment: fixed;
 }
 
-/* Scrollbar */
-::-webkit-scrollbar {
-  width: 4px;
-}
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-::-webkit-scrollbar-thumb {
-  background: rgba(99, 102, 241, 0.4);
-  border-radius: 2px;
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   Scrollbar — iOS style (ultra thin)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+::-webkit-scrollbar        { width: 3px; height: 3px; }
+::-webkit-scrollbar-track  { background: transparent; }
+::-webkit-scrollbar-thumb  {
+  background: rgba(148, 150, 255, 0.35);
+  border-radius: 99px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(99, 102, 241, 0.7);
+  background: rgba(148, 150, 255, 0.65);
 }
 
-/* Glass card utility */
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   GLASS UTILITIES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+/* Thin — navbar / pill buttons */
+.glass-thin {
+  background:       var(--glass-thin-bg);
+  backdrop-filter:  var(--glass-thin-blur);
+  -webkit-backdrop-filter: var(--glass-thin-blur);
+  border:           1px solid var(--glass-thin-border);
+  box-shadow:       var(--glass-thin-shadow);
+}
+
+/* Regular — cards, messages */
 .glass {
-  background: var(--glass-bg);
-  backdrop-filter: var(--glass-blur);
+  background:       var(--glass-bg);
+  backdrop-filter:  var(--glass-blur);
   -webkit-backdrop-filter: var(--glass-blur);
-  border: 1px solid var(--glass-border);
-  box-shadow: var(--glass-shadow);
+  border:           1px solid var(--glass-border);
+  box-shadow:       var(--glass-shadow);
 }
 
-/* Message bubbles */
+/* Thick — sidebar, modal backgrounds */
+.glass-thick {
+  background:       var(--glass-thick-bg);
+  backdrop-filter:  var(--glass-thick-blur);
+  -webkit-backdrop-filter: var(--glass-thick-blur);
+  border:           1px solid var(--glass-thick-border);
+  box-shadow:       var(--glass-thick-shadow);
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   LIQUID DROP — water bubble
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.drop {
+  background:       var(--drop-bg);
+  backdrop-filter:  blur(24px) saturate(2);
+  -webkit-backdrop-filter: blur(24px) saturate(2);
+  border-top:       1px solid var(--drop-border-top);
+  border-left:      1px solid rgba(255, 255, 255, 0.25);
+  border-right:     1px solid rgba(255, 255, 255, 0.08);
+  border-bottom:    1px solid var(--drop-border-bottom);
+  box-shadow:       var(--drop-shadow);
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   IRIDESCENT shimmer overlay
+   Usage: add .iridescent to any .glass element
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.iridescent {
+  position: relative;
+  overflow: hidden;
+}
+.iridescent::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    var(--shimmer-a) 0%,
+    transparent      35%,
+    var(--shimmer-b) 55%,
+    transparent      70%,
+    var(--shimmer-c) 100%
+  );
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+.iridescent:hover::before {
+  opacity: 1;
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   TOP SPECULAR HIGHLIGHT
+   The bright edge at the top — key to "glass" feel
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.glass-highlight::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 10%;
+  right: 10%;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.6) 40%,
+    rgba(255, 255, 255, 0.6) 60%,
+    transparent
+  );
+  pointer-events: none;
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   MESSAGE BUBBLES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 .bubble-own {
-  background: var(--bubble-own);
-  border: 1px solid rgba(99, 102, 241, 0.3);
-  backdrop-filter: blur(8px);
+  background:    var(--bubble-own);
+  border:        1px solid var(--bubble-own-border);
+  box-shadow:    var(--bubble-own-shadow);
+  backdrop-filter: blur(12px) saturate(1.5);
+  -webkit-backdrop-filter: blur(12px) saturate(1.5);
+  position: relative;
+}
+/* Specular on own bubble */
+.bubble-own::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 8%; right: 8%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5) 50%, transparent);
+  border-radius: 1px;
 }
 
 .bubble-other {
-  background: var(--bubble-other);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(8px);
+  background:    var(--bubble-other);
+  border:        1px solid var(--bubble-other-border);
+  box-shadow:    var(--bubble-other-shadow);
+  backdrop-filter: blur(12px) saturate(1.4);
+  -webkit-backdrop-filter: blur(12px) saturate(1.4);
+  position: relative;
+}
+.bubble-other::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 8%; right: 8%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25) 50%, transparent);
+  border-radius: 1px;
 }
 
-/* Smooth transitions */
-* {
-  transition-property: background-color, border-color, box-shadow;
-  transition-duration: 150ms;
-  transition-timing-function: ease;
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   SMOOTH TRANSITIONS (selective — not on all props)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+button, a, input, [role="button"] {
+  transition: background-color 120ms ease,
+              border-color     120ms ease,
+              box-shadow       180ms ease,
+              opacity          150ms ease,
+              transform        150ms ease;
 }
 
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   PRESS EFFECT — iOS tap feel
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+button:active, [role="button"]:active {
+  transform: scale(0.97);
+  opacity: 0.85;
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   FOCUS RING — iOS blue glow
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.5),
+              0 0 0 4px rgba(99, 102, 241, 0.15);
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   INPUT — liquid glass field
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+input[type="text"],
+input[type="search"],
+textarea {
+  background:    rgba(255, 255, 255, 0.05);
+  border:        1px solid rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  color: hsl(var(--foreground));
+  border-radius: var(--radius);
+  transition: border-color 150ms ease, box-shadow 200ms ease;
+}
+input[type="text"]:focus,
+input[type="search"]:focus,
+textarea:focus {
+  border-color: rgba(99, 102, 241, 0.6);
+  box-shadow:   0 0 0 3px rgba(99, 102, 241, 0.15),
+                0 1px 0 rgba(255,255,255,0.1) inset;
+  outline: none;
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   SELECTION colour
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+::selection {
+  background: rgba(99, 102, 241, 0.35);
+  color: #fff;
+}
