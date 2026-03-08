@@ -1,13 +1,12 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy import select, or_
 
 from app.database import get_db
 from app.models.computer import Computer
 from app.models.room import Room
 from app.schemas.room import RoomOut
 from app.utils import get_client_ip
-from fastapi import Request
 from typing import List
 
 router = APIRouter()
@@ -25,12 +24,22 @@ async def get_rooms(request: Request, db: AsyncSession = Depends(get_db)):
 
     # Админ видит все комнаты
     if computer.is_admin:
-        result = await db.execute(select(Room))
-    else:
-        # Ученик видит только комнаты своего класса
-        result = await db.execute(
-            select(Room).where(Room.classroom == computer.classroom)
-        )
+        result = await db.execute(select(Room).order_by(Room.type, Room.id))
+        return result.scalars().all()
+
+    # Ученик видит:
+    # 1. Групповой чат своего класса
+    # 2. Личные чаты где он участник (имя компа есть в названии комнаты)
+    result = await db.execute(
+        select(Room).where(
+            or_(
+                # Групповые чаты класса
+                (Room.type == 'group') & (Room.classroom == computer.classroom),
+                # Личные чаты где участвует этот комп
+                (Room.type == 'private') & (Room.name.ilike(f'%{computer.name}%')),
+            )
+        ).order_by(Room.type, Room.id)  # group < private алфавитно — group первый
+    )
 
     rooms = result.scalars().all()
     return rooms

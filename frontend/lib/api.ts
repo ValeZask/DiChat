@@ -66,3 +66,13 @@ export async function fetchMessages(
   if (!res.ok) throw new Error(`fetchMessages failed: ${res.status}`);
   return res.json();
 }
+
+// GET /classmates — компы своего класса без себя
+export async function fetchClassmates(clientIp?: string): Promise<User[]> {
+  const headers: Record<string, string> = {};
+  if (clientIp) headers['X-Forwarded-For'] = clientIp;
+
+  const res = await fetch(`${API_BASE}/classmates`, { headers, cache: 'no-store' });
+  if (!res.ok) throw new Error(`fetchClassmates failed: ${res.status}`);
+  return res.json();
+}
