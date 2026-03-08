@@ -1,6 +1,13 @@
 // Базовый URL бэкенда
-export const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000';
-export const WS_BASE  = process.env.NEXT_PUBLIC_WS_URL  ?? 'ws://localhost:8000';
+// NEXT_PUBLIC_ — для браузера (localhost)
+// INTERNAL_API_URL — для SSR внутри Docker (backend:8000)
+const isServer = typeof window === 'undefined';
+
+export const API_BASE = isServer
+  ? (process.env.INTERNAL_API_URL ?? 'http://backend:8000')
+  : (process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000');
+
+export const WS_BASE = process.env.NEXT_PUBLIC_WS_URL ?? 'ws://localhost:8000';
 
 export interface User {
   ip: string;
@@ -12,7 +19,7 @@ export interface User {
 export interface Room {
   id: number;
   name: string;
-  type: string;         // 'group' | 'private'
+  type: string;
   classroom: string | null;
 }
 
@@ -25,7 +32,6 @@ export interface Message {
   created_at: string;
 }
 
-// GET /me — передаём IP клиента через заголовок
 export async function fetchMe(clientIp?: string): Promise<User> {
   const headers: Record<string, string> = {};
   if (clientIp) headers['X-Forwarded-For'] = clientIp;
@@ -35,7 +41,6 @@ export async function fetchMe(clientIp?: string): Promise<User> {
   return res.json();
 }
 
-// GET /rooms
 export async function fetchRooms(clientIp?: string): Promise<Room[]> {
   const headers: Record<string, string> = {};
   if (clientIp) headers['X-Forwarded-For'] = clientIp;
@@ -45,7 +50,6 @@ export async function fetchRooms(clientIp?: string): Promise<Room[]> {
   return res.json();
 }
 
-// GET /messages/{room_id}
 export async function fetchMessages(
   roomId: number,
   clientIp?: string,

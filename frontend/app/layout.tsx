@@ -16,10 +16,13 @@ export default async function RootLayout({
 }) {
   // SSR: читаем IP из входящего запроса
   const headersList = await headers();
-  const clientIp =
+  const rawIp =
     headersList.get('x-forwarded-for') ??
     headersList.get('x-real-ip') ??
     '127.0.0.1';
+
+  // Очищаем IPv6-mapped IPv4 префикс (::ffff:172.19.0.1 → 172.19.0.1)
+  const clientIp = rawIp.replace(/^::ffff:/, '');
 
   // Загружаем пользователя на сервере и передаём клиенту
   let initialUser = null;
