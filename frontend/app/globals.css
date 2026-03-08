@@ -140,7 +140,6 @@ body {
   color: hsl(var(--foreground));
   font-family: 'Inter', system-ui, sans-serif;
   min-height: 100vh;
-  overflow: hidden;
 
   /* Deep multi-layer aurora background */
   background-image:

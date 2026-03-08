@@ -10,6 +10,7 @@ export const API_BASE = isServer
 export const WS_BASE = process.env.NEXT_PUBLIC_WS_URL ?? 'ws://localhost:8000';
 
 export interface User {
+  id: number;
   ip: string;
   name: string;
   classroom: string;

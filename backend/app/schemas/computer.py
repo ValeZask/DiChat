@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 
 class ComputerMe(BaseModel):
+    id: int
     ip: str
     name: str
     classroom: str
