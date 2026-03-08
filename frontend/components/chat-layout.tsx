@@ -5,6 +5,7 @@ import { useMe } from '@/components/user-provider';
 import { type Room, type User, type Message, fetchMessages, WS_BASE } from '@/lib/api';
 import { Badge } from '@/components/ui/badge';
 import { MessageList } from '@/components/message-list';
+import { useWebSocket } from '@/hooks/useWebSocket';
 
 interface ChatLayoutProps {
   rooms: Room[];
@@ -31,6 +32,13 @@ export function ChatLayout({ rooms, classmates }: ChatLayoutProps) {
       .finally(() => setLoadingMsgs(false));
   }, [activeRoom?.id]);
 
+
+  const { sendMessage } = useWebSocket({
+    roomId: activeRoom?.id ?? null,
+    onMessage: (msg) => {
+      setMessages(prev => [...prev, msg]);
+    },
+  });
   // Найти личную комнату между двумя компами
   function findPrivateRoom(classmate: User): Room | null {
     if (!user) return null;
